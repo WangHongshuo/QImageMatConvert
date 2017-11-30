@@ -24,9 +24,9 @@ mwArray mat2mwArray(const cv::Mat imgSrc)
         {
             for (int j = 0; j < w; ++j)
             {
-                pMat(i+1,j+1,1) = (UINT8_T)imgSrcs.at<cv::Vec3b>(i,j)[2];
-                pMat(i+1,j+1,2) = (UINT8_T)imgSrcs.at<cv::Vec3b>(i,j)[1];
-                pMat(i+1,j+1,3) = (UINT8_T)imgSrcs.at<cv::Vec3b>(i,j)[0];
+                pMat(i+1,j+1,1) = (UINT8_T)imgSrcs.ptr<uchar>(i)[j+2];
+                pMat(i+1,j+1,2) = (UINT8_T)imgSrcs.ptr<uchar>(i)[j+1];
+                pMat(i+1,j+1,3) = (UINT8_T)imgSrcs.ptr<uchar>(i)[j+0];
 
             }
         }
@@ -65,9 +65,9 @@ cv::Mat mwArray2mat(const mwArray data)
         {
             for (int j = 0; j < w; j++)
             {
-                image.at<cv::Vec3b>(i,j)[0] = (int)data.Get(3,i+1,j+1,3);
-                image.at<cv::Vec3b>(i,j)[1] = (int)data.Get(3,i+1,j+1,2);
-                image.at<cv::Vec3b>(i,j)[2] = (int)data.Get(3,i+1,j+1,1);
+                (UINT8_T)imgSrcs.ptr<uchar>(i)[j+0]; = (int)data.Get(3,i+1,j+1,3);
+                (UINT8_T)imgSrcs.ptr<uchar>(i)[j+1]; = (int)data.Get(3,i+1,j+1,2);
+                (UINT8_T)imgSrcs.ptr<uchar>(i)[j+2]; = (int)data.Get(3,i+1,j+1,1);
             }
         }
         return image;
