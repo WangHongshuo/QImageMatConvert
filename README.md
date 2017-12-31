@@ -1,4 +1,5 @@
-# Mat-QImage_Mat_mwArray_convert
+# Mat-QImage Mat-mwArray and QImage-mwArray convert
+- This project based on Matlab2015a X86, Qt and opencv.
 ## Introduction: ##
 
 Mat(opencv)和QImage(Qt)以及mwArray(matlab)三个类的相互转换。     
