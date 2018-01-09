@@ -1,16 +1,25 @@
 # Mat-QImage Mat-mwArray and QImage-mwArray convert
-- This project based on Matlab2015a X86, Qt and opencv.
+- This project based on Qt and opencv.
+- The mwArray convert to Mat and QImage is move to [https://github.com/WangHongshuo/mwArrayConvertToQImageMat](https://github.com/WangHongshuo/mwArrayConvertToQImageMat "Here")
 ## Introduction: ##
 
-Mat(opencv)和QImage(Qt)以及mwArray(matlab)三个类的相互转换。     
-Mat-QImage和Mat-mwArray来源于互联网，QImage-mwArray是自己写的，可能有疏忽的地方。     
+The QImage(Qt) and Mat(opencv) can be convert to each other in this function. It can use deep copy (the data don't share the same memory) or shadow copy (the data share the same memory) to do conversion.      
 
-Mat(opencv) and QImage(Qt), Mat and mwArray(Matlab), QImage and mwArray convert.       
-Mat-QImage and Mat-mwArray are obtained from the Internet, QImage-mwArray is created by myself, so it's unstable (       
+PAY ATTENTION: When the `Mat::channels == 3` or `QImage::format == QImage::Format_RGB888`, using shadow copy will change the src data, because the sequence of RGB is different between QImage and Mat.       
+
+QImage(Qt) 和 Mat(opencv) 相互转化，可以通过深拷贝(data不共用一块内存)和浅拷贝(data共用一块内存)来进行转化。     
+   
+注意：当 `Mat::channels == 3` 或 `QImage::format == QImage::Format_RGB888` 时，进行浅拷贝会改变src的data，Mat和QImage的RGB排序不同。    
 
 ## Change Log: ##
 
-- 2018.1.8:      
+- 2018.01.09:     
+
+Set `mat_qimage_convert` to submodule.      
+
+将`mat_qimage_convert`的转换独立为子模块。       
+
+- 2018.01.08:      
 
 Changed the variable names in `mat_qimage_convert` and added annotation. Tested all the function and fixed a small error.        
 
