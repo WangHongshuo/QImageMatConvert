@@ -1,6 +1,6 @@
-# Mat-QImage Mat-mwArray and QImage-mwArray convert
+# Mat-QImage conversion
 - This project based on Qt and opencv.
-- The mwArray convert to Mat and QImage is move to [https://github.com/WangHongshuo/mwArrayConvertToQImageMat](https://github.com/WangHongshuo/mwArrayConvertToQImageMat "Here")
+- The mwArray convert to Mat and QImage is moved to [https://github.com/WangHongshuo/mwArrayConvertToQImageMat](https://github.com/WangHongshuo/mwArrayConvertToQImageMat "Here")
 ## Introduction: ##
 
 The QImage(Qt) and Mat(opencv) can be convert to each other in this function. It can use deep copy (the data don't share the same memory) or shadow copy (the data share the same memory) to do conversion.      
