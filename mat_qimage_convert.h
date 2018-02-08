@@ -17,7 +17,7 @@
 QImage Mat2QImage_with_pointer(cv::Mat &src);
 cv::Mat QImage2Mat_with_pointer(QImage &src);
 
-QImage Mat2QImage_with_data(cv::Mat &src);
-cv::Mat QImage2Mat_with_data(QImage &src);
+QImage Mat2QImage_with_data(const cv::Mat &src);
+cv::Mat QImage2Mat_with_data(const QImage &src);
 
 #endif // MAT_QIMAGE_CONVERT_H

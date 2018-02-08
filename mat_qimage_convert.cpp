@@ -63,7 +63,7 @@ cv::Mat QImage2Mat_with_pointer(QImage &src)
 }
 
 // cv::Mat::data and QImage::bits() are different
-QImage Mat2QImage_with_data(cv::Mat &src)
+QImage Mat2QImage_with_data(const cv::Mat &src)
 {
     // 1 channel
     if(src.type() == CV_8UC1)
@@ -97,7 +97,7 @@ QImage Mat2QImage_with_data(cv::Mat &src)
 }
 
 // cv::Mat::data and QImage::bits() are different
-cv::Mat QImage2Mat_with_data(QImage &src)
+cv::Mat QImage2Mat_with_data(const QImage &src)
 {
     cv::Mat dst;
 //    qDebug() << src.format();
