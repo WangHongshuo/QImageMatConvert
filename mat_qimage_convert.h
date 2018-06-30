@@ -6,13 +6,13 @@
 #include <opencv2/core/core.hpp>
 #include <QImage>
 
-// ==================================================================================+
+// ==================================================================================
 // Warning!
 // When the src Mat channels is 3 or the src QImage format is RGB,
 // the Mat2QImage_with_pointer and QImage2Mat_with_pointer will change the src image.
 // When use Mat2QImage_with_pointer or Mat2QImage_with_pointer,
-// the src Mat::data (src QImage::bits()) address
-// and dst QImage::bits() (dst Mat::data) address are the same!
+// the src Mat::data (src QImage::bits()) address is the same as
+// dst QImage::bits() (dst Mat::data) address !
 // ===================================================================================
 QImage Mat2QImage_with_pointer(cv::Mat &src);
 cv::Mat QImage2Mat_with_pointer(QImage &src);

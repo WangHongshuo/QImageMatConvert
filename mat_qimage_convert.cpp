@@ -1,7 +1,7 @@
 #include "mat_qimage_convert.h"
 #include <QDebug>
 
-// cv::Mat::data and QImage::bits() are the same
+// cv::Mat::data is the same as QImage::bits()
 QImage Mat2QImage_with_pointer(cv::Mat &src)
 {
     // 1 channel
@@ -37,7 +37,7 @@ QImage Mat2QImage_with_pointer(cv::Mat &src)
     }
 }
 
-// cv::Mat::data and QImage::bits() are the same
+// cv::Mat::data is the same as QImage::bits()
 cv::Mat QImage2Mat_with_pointer(QImage &src)
 {
     cv::Mat dst;
