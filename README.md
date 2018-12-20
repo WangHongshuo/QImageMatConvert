@@ -13,6 +13,12 @@ QImage(Qt) 和 Mat(opencv) 相互转化，可以通过深拷贝(data不共用一
 
 ## Change Log: ##
 
+- 2018.12.23
+
+Updated enum cv::ColorConversionCodes to support opencv4.0 (A lot of C API from OpenCV 1.x has been removed such as CV_BGR2RGB in opencv4.0.)
+
+更新opencv颜色转换code，支持opencv4.0（opencv4.0移除了C API，比如CV_BGR2RGB）
+
 - 2018.01.09:     
 
 Set `mat_qimage_convert` to submodule.      

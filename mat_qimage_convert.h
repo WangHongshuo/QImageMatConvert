@@ -1,9 +1,12 @@
+// opencv version >= 3.0
+
 #ifndef MAT_QIMAGE_CONVERT_H
 #define MAT_QIMAGE_CONVERT_H
 
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/core/core.hpp>
+#include <assert.h>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/imgcodecs.hpp>
 #include <QImage>
 
 // ==================================================================================
