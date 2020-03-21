@@ -5,3 +5,4 @@ mainwindow.ui
 mainwindow.h
 mainwindow.cpp
 build-Test_QImageMatConvert-*/
+*.user
