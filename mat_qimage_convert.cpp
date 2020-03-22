@@ -2,7 +2,7 @@
 #include <QDebug>
 
 // cv::Mat::data is the same as QImage::bits()
-QImage Mat2QImageWithPointer(const cv::Mat& src)
+QImage Mat2QImageShadowCopy(const cv::Mat& src)
 {
     // 1 channel
     if (src.type() == CV_8UC1) {
@@ -33,7 +33,7 @@ QImage Mat2QImageWithPointer(const cv::Mat& src)
 }
 
 // cv::Mat::data is the same as QImage::bits()
-cv::Mat QImage2MatWithPointer(const QImage& src)
+cv::Mat QImage2MatShadowCopy(const QImage& src)
 {
     cv::Mat dst;
     switch (src.format()) {
@@ -65,7 +65,7 @@ cv::Mat QImage2MatWithPointer(const QImage& src)
 }
 
 // cv::Mat::data and QImage::bits() are different
-QImage Mat2QImageWithData(const cv::Mat& src)
+QImage Mat2QImageDeepCopy(const cv::Mat& src)
 {
     // 1 channel
     if (src.type() == CV_8UC1) {
@@ -95,7 +95,7 @@ QImage Mat2QImageWithData(const cv::Mat& src)
 }
 
 // cv::Mat::data and QImage::bits() are different
-cv::Mat QImage2MatWithData(const QImage& src)
+cv::Mat QImage2MatDeepCopy(const QImage& src)
 {
     cv::Mat dst;
     switch (src.format()) {

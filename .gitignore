@@ -6,3 +6,4 @@ mainwindow.h
 mainwindow.cpp
 build-Test_QImageMatConvert-*/
 *.user
+build-test-Desktop_Qt_5_14_1_MinGW_64_bit-Debug/
