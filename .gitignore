@@ -1,9 +1,3 @@
-main.cpp
-Test_QImageMatConvert.pro.user
-Test_QImageMatConvert.pro
-mainwindow.ui
-mainwindow.h
-mainwindow.cpp
-build-Test_QImageMatConvert-*/
 *.user
-build-test-Desktop_Qt_5_14_1_MinGW_64_bit-Debug/
+build-*/
+test_show_img/

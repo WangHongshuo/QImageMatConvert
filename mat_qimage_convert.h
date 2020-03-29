@@ -9,18 +9,12 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 
-// ==================================================================================
-// Warning!
-// When the src Mat channels is 3 or the src QImage format is RGB,
-// the Mat2QImageShadowCopy() and QImage2MatShadowCopy will change the src image.
-// When use Mat2QImageShadowCopy or QImage2MatShadowCopy,
-// the src Mat::data (src QImage::bits()) address is the same as
-// dst QImage::bits() (dst Mat::data) address !
-// ===================================================================================
-QImage Mat2QImageShadowCopy(const cv::Mat& src);
-cv::Mat QImage2MatShadowCopy(const QImage& src);
-
-QImage Mat2QImageDeepCopy(const cv::Mat& src);
-cv::Mat QImage2MatDeepCopy(const QImage& src);
+/** WARNING!
+ *  When the src QImage format is QImage::Format_RGB8888 and the enableDeepCopy == false,
+ *  the ConvertQImageToMat() will change the pixel order of src QImage(RGB to BGR).
+ *  ShadowCopy for show image(faster), DeepCopy for process image data(safer).
+ */
+QImage ConvertMatToQImage(const cv::Mat& src, bool enableDeepCopy = false);
+cv::Mat ConvertQImageToMat(const QImage& src, bool enableDeepCopy = false);
 
 #endif // MAT_QIMAGE_CONVERT_H

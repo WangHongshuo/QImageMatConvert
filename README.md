@@ -5,13 +5,18 @@
 
 The QImage(Qt) and Mat(opencv) can be convert to each other in this function. It can use deep copy (the data don't share the same memory) or shadow copy (the data share the same memory) to do conversion.      
 
-PAY ATTENTION: When the `Mat::channels == 3` or `QImage::format == QImage::Format_RGB888`, using shadow copy will change the src data, because the sequence of RGB is different between QImage and Mat.       
+PAY ATTENTION: When the `QImage::format == QImage::Format_RGB888`, using shadow copy will change the src data, because the RGB pixel order between QImage and Mat are different.       
 
 QImage(Qt) 和 Mat(opencv) 相互转化，可以通过深拷贝(data不共用一块内存)和浅拷贝(data共用一块内存)来进行转化。     
    
-注意：当 `Mat::channels == 3` 或 `QImage::format == QImage::Format_RGB888` 时，进行浅拷贝会改变src的data，Mat和QImage的RGB排序不同。    
+注意：当`QImage::format == QImage::Format_RGB888` 时，进行浅拷贝会改变src的data，Mat和QImage的RGB排序不同。    
 
 ## Change Log: ##
+- 2020.03.29
+  
+Cleaned the code and added unit test
+
+清理代码，补充单元测试
 
 - 2018.12.23
 

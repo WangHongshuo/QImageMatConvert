@@ -21,7 +21,6 @@ public:
     ~QImageMatConvert();
     Mat mImg;
     QImage qImg;
-    uchar* array = nullptr;
 
 private slots:
     void initTestCase();
@@ -30,13 +29,14 @@ private slots:
     void testCase01Mat2QImageShadowCopyForGrayImage();
     void testCase01Mat2QImageDeepCopyForGrayImage();
     void testCase01QImage2MatShadowCopyForGrayImage();
-    void testCase01QImage2MatShadowDeepCopyForGrayImage();
+    void testCase01QImage2MatDeepCopyForGrayImage();
     void cleanupTest01ForGrayImage();
 
     void initTestCase01For3ChannelImage();
     void testCase01Mat2QImageShadowCopyFor3ChannelImage();
     void testCase01Mat2QImageDeepCopyFor3ChannelImage();
     void testCase01QImage2MatShadowCopyFor3ChannelImage();
+    void testCase01QImage2MatShadowCopyFor3ChannelImageCleanUp();
     void testCase01QImage2MatDeepCopyFor3ChannelImage();
     void cleanupTestCase01For3ChannelImage();
 
@@ -57,195 +57,230 @@ QImageMatConvert::QImageMatConvert() {}
 
 QImageMatConvert::~QImageMatConvert() {}
 
-void QImageMatConvert::initTestCase() { initArray(); }
+void QImageMatConvert::initTestCase() {}
 
 void QImageMatConvert::initTestCase01ForGrayImage()
 {
-    mImg = Mat(2, 2, CV_8UC1, array);
-    qImg = QImage(array, 2, 2, QImage::Format_Indexed8);
+    // Gray_Test.bmp row: 1, col: 3, 1 channel, 8 bit, 8-bit for each pixel
+    // Original(Opencv) Data:
+    // [  0, 127, 255]
+    mImg = cv::imread("..//test//img//Gray_Test.bmp", cv::IMREAD_UNCHANGED);
+    QCOMPARE(mImg.rows, 1);
+    QCOMPARE(mImg.cols, 3);
+    QCOMPARE(mImg.dataend - mImg.datastart, 3);
+    QCOMPARE(mImg.type(), CV_8UC1);
+    QCOMPARE(mImg.data[0], 0);
+    QCOMPARE(mImg.data[1], 127);
+    QCOMPARE(mImg.data[2], 255);
+    // QImage Data:
+    // [  0, 127, 255, 0]
+    qImg.load("..//test//img//Gray_Test.bmp");
+    QCOMPARE(qImg.format(), QImage::Format_Indexed8);
+    QCOMPARE(qImg.sizeInBytes(), 4);
+    QCOMPARE(qImg.bytesPerLine(), 4);
+    QCOMPARE(qImg.scanLine(0)[0], 0);
+    QCOMPARE(qImg.scanLine(0)[1], 127);
+    QCOMPARE(qImg.scanLine(0)[2], 255);
+    QCOMPARE(qImg.scanLine(0)[3], 0);
 }
 
 void QImageMatConvert::testCase01Mat2QImageShadowCopyForGrayImage()
 {
-    QImage qImgShadowCopy = Mat2QImageShadowCopy(mImg);
+    QImage qImgShadowCopy = ConvertMatToQImage(mImg);
     QCOMPARE(qImgShadowCopy.bits(), mImg.data);
     QCOMPARE(qImgShadowCopy.scanLine(0)[0], mImg.data[0]);
     QCOMPARE(qImgShadowCopy.scanLine(0)[1], mImg.data[1]);
     QCOMPARE(&(qImgShadowCopy.scanLine(0)[1]), &(mImg.data[1]));
-    QCOMPARE(&(qImgShadowCopy.scanLine(0)[2]), &(array[2]));
-    QCOMPARE(&(mImg.data[2]), &(array[2]));
 }
 
 void QImageMatConvert::testCase01Mat2QImageDeepCopyForGrayImage()
 {
-    QImage qImgDeepCopy = Mat2QImageDeepCopy(mImg);
+    QImage qImgDeepCopy = ConvertMatToQImage(mImg, true);
     QCOMPARE(qImgDeepCopy.bits() == mImg.data, false);
     QCOMPARE(qImgDeepCopy.scanLine(0)[0], mImg.data[0]);
     QCOMPARE(qImgDeepCopy.scanLine(0)[1], mImg.data[1]);
     QCOMPARE(&(qImgDeepCopy.scanLine(0)[1]) == &(mImg.data[1]), false);
-    QCOMPARE(&(qImgDeepCopy.scanLine(0)[2]) == &(array[2]), false);
-    QCOMPARE(&(mImg.data[2]), &(array[2]));
 }
 
 void QImageMatConvert::testCase01QImage2MatShadowCopyForGrayImage()
 {
-    Mat mImgShadowCopy = QImage2MatShadowCopy(qImg);
+    Mat mImgShadowCopy = ConvertQImageToMat(qImg);
     QCOMPARE(mImgShadowCopy.data, qImg.bits());
     QCOMPARE(mImgShadowCopy.data[0], qImg.scanLine(0)[0]);
     QCOMPARE(mImgShadowCopy.data[1], qImg.scanLine(0)[1]);
     QCOMPARE(&(mImgShadowCopy.data[1]), &(qImg.scanLine(0)[1]));
-    QCOMPARE(&(mImgShadowCopy.data[2]), &(array[2]));
-    QCOMPARE(&(mImg.data[2]), &(array[2]));
 }
 
-void QImageMatConvert::testCase01QImage2MatShadowDeepCopyForGrayImage()
+void QImageMatConvert::testCase01QImage2MatDeepCopyForGrayImage()
 {
-    Mat mImgDeepCopy = QImage2MatDeepCopy(qImg);
+    Mat mImgDeepCopy = ConvertQImageToMat(qImg, true);
     QCOMPARE(mImgDeepCopy.data == qImg.bits(), false);
     QCOMPARE(mImgDeepCopy.data[0], qImg.scanLine(0)[0]);
     QCOMPARE(mImgDeepCopy.data[1], qImg.scanLine(0)[1]);
-    QCOMPARE(&(mImgDeepCopy.data[0]) == &(qImg.scanLine(0)[1]), false);
-    QCOMPARE(&(mImgDeepCopy.data[2]) == &(array[2]), false);
-    QCOMPARE(&(qImg.scanLine(0)[2]), &(array[2]));
+    QCOMPARE(&(mImgDeepCopy.data[1]) == &(qImg.scanLine(0)[1]), false);
 }
 
 void QImageMatConvert::cleanupTest01ForGrayImage() {}
 
 void QImageMatConvert::initTestCase01For3ChannelImage()
 {
-    initArray();
-    mImg = Mat(2, 2, CV_8UC3, array);
-    qImg = QImage(array, 2, 2, QImage::Format_RGB888);
+    // RGBA_Test.bmp row: 2, col: 3, 3 channel, 8 bit, 24-bit for each pixel
+    // Original Data(BGR order):
+    // [[  0,   0, 255], [  0, 255,   0], [255,   0,   0];
+    //  [  0,   0,   0], [127, 127, 127], [255, 255, 255]]
+    mImg = cv::imread("..//test//img//RGBA_Test.bmp", cv::IMREAD_UNCHANGED);
+    QCOMPARE(mImg.rows, 2);
+    QCOMPARE(mImg.cols, 3);
+    QCOMPARE(mImg.dataend - mImg.datastart, 18);
+    QCOMPARE(mImg.type(), CV_8UC3);
+    QCOMPARE(mImg.data[2], 255);
+    QCOMPARE(mImg.data[6], 255);
+    QCOMPARE(mImg.data[13], 127);
+    // QImage Data(Format_RGB32, BGRA order, alpha == 0xff):
+    // [[  0,   0, 255, 255], [  0, 255,   0, 255], [255,   0,   0, 255];
+    //  [  0,   0,   0, 255], [127, 127, 127, 255], [255, 255, 255, 255]]
+    qImg.load("..//test//img//RGBA_Test.bmp");
+    QCOMPARE(qImg.format(), QImage::Format_RGB32);
+    QCOMPARE(qImg.sizeInBytes(), 24);
+    QCOMPARE(qImg.bytesPerLine(), 12);
+    QCOMPARE(qImg.scanLine(0)[2], 255);
+    QCOMPARE(qImg.scanLine(0)[3], 255);
+    QCOMPARE(qImg.scanLine(0)[8], 255);
+    // QImage Data(Format_RGB888, RGB order):
+    // [[255,   0,   0], [  0, 255,   0], [  0,   0, 255], ??, ??, ??;
+    //  [  0,   0,   0], [127, 127, 127], [255, 255, 255], ??, ??, ??]
+    qImg.convertTo(QImage::Format_RGB888);
+    QCOMPARE(qImg.sizeInBytes(), 24);
+    QCOMPARE(qImg.bytesPerLine(), 12);
+    QCOMPARE(qImg.scanLine(0)[0], 255);
+    QCOMPARE(qImg.scanLine(0)[8], 255);
+    QCOMPARE(qImg.scanLine(1)[4], 127);
 }
 
 void QImageMatConvert::testCase01Mat2QImageShadowCopyFor3ChannelImage()
 {
-    initTestCase01For3ChannelImage();
-    // mImg BGR: [[0, 1, 2], [3, 4, 5]; [6, 7, 8], [9, 10, 11]]
-    // qImg RGB: [[2, 1, 0], [5, 4, 3]; [8, 7, 6], [11, 10, 9]]
-    QImage qImgShadowCopy = Mat2QImageShadowCopy(mImg);
+    QImage qImgShadowCopy = ConvertMatToQImage(mImg);
     QCOMPARE(qImgShadowCopy.bits(), mImg.data);
     QCOMPARE(qImgShadowCopy.scanLine(0)[0], mImg.data[0]);
     QCOMPARE(qImgShadowCopy.scanLine(0)[1], mImg.data[1]);
     QCOMPARE(&(qImgShadowCopy.scanLine(0)[1]), &(mImg.data[1]));
-    QCOMPARE(&(qImgShadowCopy.scanLine(0)[2]), &(array[2]));
-    QCOMPARE(&(mImg.data[2]), &(array[2]));
-    QCOMPARE(array[2], 0);
+    QCOMPARE(qImgShadowCopy.format(), QImage::Format_BGR888);
 }
 
 void QImageMatConvert::testCase01Mat2QImageDeepCopyFor3ChannelImage()
 {
-    initTestCase01For3ChannelImage();
-    // qImg BGR: [[0, 1, 2], [3, 4, 5]; [6, 7, 8], [9, 10, 11]]
-    // mImg RGB: [[0, 1, 2], [3, 4, 5]; [6, 7, 8], [9, 10, 11]]
-    QImage qImgDeepCopy = Mat2QImageDeepCopy(mImg);
+    QImage qImgDeepCopy = ConvertMatToQImage(mImg, true);
     QCOMPARE(qImgDeepCopy.bits() == mImg.data, false);
-    QCOMPARE(qImgDeepCopy.scanLine(0)[0], mImg.data[2]);
+    QCOMPARE(qImgDeepCopy.scanLine(0)[0], mImg.data[0]);
     QCOMPARE(qImgDeepCopy.scanLine(0)[1], mImg.data[1]);
     QCOMPARE(&(qImgDeepCopy.scanLine(0)[1]) == &(mImg.data[1]), false);
-    QCOMPARE(&(qImgDeepCopy.scanLine(0)[2]) == &(array[2]), false);
-    QCOMPARE(&(mImg.data[2]), &(array[2]));
-    QCOMPARE(array[2], 2);
+    QCOMPARE(qImgDeepCopy.format(), QImage::Format_BGR888);
 }
 
 void QImageMatConvert::testCase01QImage2MatShadowCopyFor3ChannelImage()
 {
-    initTestCase01For3ChannelImage();
-    // qImg BGR: [[0, 1, 2], [3, 4, 5]; [6, 7, 8], [9, 10, 11]]
-    // mImg RGB: [[2, 1, 0], [5, 4, 3]; [8, 7, 6], [11, 10, 9]]
-    Mat mImgShadowCopy = QImage2MatShadowCopy(qImg);
+    // QImage Data(Format_RGB888, RGB order):
+    // [[255,   0,   0], [  0, 255,   0], [  0,   0, 255], ??, ??, ??;
+    //  [  0,   0,   0], [127, 127, 127], [255, 255, 255], ??, ??, ??]
+    // the pixel order of qImg will be converted to BGR:
+    // [[  0,   0, 255], [  0, 255,   0], [255,   0,   0], ??, ??, ??;
+    //  [  0,   0,   0], [127, 127, 127], [255, 255, 255], ??, ??, ??]
+    Mat mImgShadowCopy = ConvertQImageToMat(qImg);
     QCOMPARE(mImgShadowCopy.data, qImg.bits());
     QCOMPARE(mImgShadowCopy.data[0], qImg.scanLine(0)[0]);
     QCOMPARE(mImgShadowCopy.data[1], qImg.scanLine(0)[1]);
     QCOMPARE(&(mImgShadowCopy.data[1]), &(qImg.scanLine(0)[1]));
-    QCOMPARE(&(mImgShadowCopy.data[2]), &(array[2]));
-    QCOMPARE(&(mImg.data[2]), &(array[2]));
-    QCOMPARE(array[2], 0);
+    // check qImg pixel order
+    QCOMPARE(qImg.scanLine(0)[0], 0);
+    QCOMPARE(qImg.scanLine(0)[8], 0);
+    QCOMPARE(qImg.scanLine(0)[2], 255);
+    QCOMPARE(qImg.scanLine(0)[6], 255);
+}
+
+void QImageMatConvert::testCase01QImage2MatShadowCopyFor3ChannelImageCleanUp()
+{
+    std::swap(qImg.scanLine(0)[0], qImg.scanLine(0)[2]);
+    std::swap(qImg.scanLine(0)[6], qImg.scanLine(0)[8]);
+    QCOMPARE(qImg.scanLine(0)[0], 255);
+    QCOMPARE(qImg.scanLine(0)[8], 255);
 }
 
 void QImageMatConvert::testCase01QImage2MatDeepCopyFor3ChannelImage()
 {
-    initTestCase01For3ChannelImage();
-    // qImg BGR: [[0, 1, 2], [3, 4, 5]; [6, 7, 8], [9, 10, 11]]
-    // mImg RGB: [[0, 1, 2], [3, 4, 5]; [6, 7, 8], [9, 10, 11]]
-    Mat mImgDeepCopy = QImage2MatDeepCopy(qImg);
+    Mat mImgDeepCopy = ConvertQImageToMat(qImg, true);
     QCOMPARE(mImgDeepCopy.data == qImg.bits(), false);
     QCOMPARE(mImgDeepCopy.data[0], qImg.scanLine(0)[2]);
     QCOMPARE(mImgDeepCopy.data[1], qImg.scanLine(0)[1]);
     QCOMPARE(&(mImgDeepCopy.data[0]) == &(qImg.scanLine(0)[1]), false);
-    QCOMPARE(&(mImgDeepCopy.data[2]) == &(array[2]), false);
-    QCOMPARE(&(qImg.scanLine(0)[2]), &(array[2]));
-    QCOMPARE(array[2], 2);
 }
 
 void QImageMatConvert::cleanupTestCase01For3ChannelImage() {}
 
 void QImageMatConvert::initTestCase01For4ChannelImage()
 {
-    initArray();
-    mImg = Mat(2, 2, CV_8UC4, array);
-    qImg = QImage(array, 2, 2, QImage::Format_ARGB32);
+    // RGBA_Test.png row: 2, col: 3, 4 channel, 8 bit, 32-bit for each pixel
+    // Original Data(BGRA order):
+    // [[  0,   0, 255, 255], [  0, 255,   0, 255], [255,   0,   0, 255];
+    //  [  0,   0,   0, 255], [127, 127, 127, 255], [255, 255, 255, 255]]
+    mImg = cv::imread("..//test//img//RGBA_Test.png", cv::IMREAD_UNCHANGED);
+    QCOMPARE(mImg.rows, 2);
+    QCOMPARE(mImg.cols, 3);
+    QCOMPARE(mImg.dataend - mImg.datastart, 24);
+    QCOMPARE(mImg.type(), CV_8UC4);
+    QCOMPARE(mImg.data[2], 255);
+    QCOMPARE(mImg.data[8], 255);
+    QCOMPARE(mImg.data[17], 127);
+    // QImage Data(Format_RGB32, BGRA order):
+    // [[  0,   0, 255, 255], [  0, 255,   0, 255], [255,   0,   0, 255];
+    //  [  0,   0,   0, 255], [127, 127, 127, 255], [255, 255, 255, 255]]
+    qImg.load("..//test//img//RGBA_Test.png");
+    QCOMPARE(qImg.format(), QImage::Format_ARGB32);
+    QCOMPARE(qImg.sizeInBytes(), 24);
+    QCOMPARE(qImg.bytesPerLine(), 12);
+    QCOMPARE(qImg.scanLine(0)[2], 255);
+    QCOMPARE(qImg.scanLine(0)[3], 255);
+    QCOMPARE(qImg.scanLine(0)[17], 127);
 }
 
 void QImageMatConvert::testCase01Mat2QImageShadowCopyFor4ChannelImage()
 {
-    QImage qImgShadowCopy = Mat2QImageShadowCopy(mImg);
+    QImage qImgShadowCopy = ConvertMatToQImage(mImg);
     QCOMPARE(qImgShadowCopy.bits(), mImg.data);
     QCOMPARE(qImgShadowCopy.scanLine(0)[0], mImg.data[0]);
     QCOMPARE(qImgShadowCopy.scanLine(0)[1], mImg.data[1]);
     QCOMPARE(&(qImgShadowCopy.scanLine(0)[1]), &(mImg.data[1]));
-    QCOMPARE(&(qImgShadowCopy.scanLine(0)[2]), &(array[2]));
-    QCOMPARE(&(mImg.data[2]), &(array[2]));
-    QCOMPARE(array[2], 2);
 }
 
 void QImageMatConvert::testCase01Mat2QImageDeepCopyFor4ChannelImage()
 {
-    QImage qImgDeepCopy = Mat2QImageDeepCopy(mImg);
+    QImage qImgDeepCopy = ConvertMatToQImage(mImg, true);
     QCOMPARE(qImgDeepCopy.bits() == mImg.data, false);
     QCOMPARE(qImgDeepCopy.scanLine(0)[0], mImg.data[0]);
     QCOMPARE(qImgDeepCopy.scanLine(0)[1], mImg.data[1]);
     QCOMPARE(&(qImgDeepCopy.scanLine(0)[1]) == &(mImg.data[1]), false);
-    QCOMPARE(&(qImgDeepCopy.scanLine(0)[2]) == &(array[2]), false);
-    QCOMPARE(&(mImg.data[2]), &(array[2]));
-    QCOMPARE(array[2], 2);
 }
 
 void QImageMatConvert::testCase01QImage2MatCopyFor4ChannelImage()
 {
-    Mat mImgShadowCopy = QImage2MatShadowCopy(qImg);
+    Mat mImgShadowCopy = ConvertQImageToMat(qImg);
     QCOMPARE(mImgShadowCopy.data, qImg.bits());
     QCOMPARE(mImgShadowCopy.data[0], qImg.scanLine(0)[0]);
     QCOMPARE(mImgShadowCopy.data[1], qImg.scanLine(0)[1]);
     QCOMPARE(&(mImgShadowCopy.data[1]), &(qImg.scanLine(0)[1]));
-    QCOMPARE(&(mImgShadowCopy.data[2]), &(array[2]));
-    QCOMPARE(&(mImg.data[2]), &(array[2]));
-    QCOMPARE(array[2], 2);
 }
 
 void QImageMatConvert::testCase01QImage2MatDeepCopyFor4ChannelImage()
 {
-    Mat mImgDeepCopy = QImage2MatDeepCopy(qImg);
+    Mat mImgDeepCopy = ConvertQImageToMat(qImg, true);
     QCOMPARE(mImgDeepCopy.data == qImg.bits(), false);
     QCOMPARE(mImgDeepCopy.data[0], qImg.scanLine(0)[0]);
     QCOMPARE(mImgDeepCopy.data[1], qImg.scanLine(0)[1]);
     QCOMPARE(&(mImgDeepCopy.data[0]) == &(qImg.scanLine(0)[1]), false);
-    QCOMPARE(&(mImgDeepCopy.data[2]) == &(array[2]), false);
-    QCOMPARE(&(qImg.scanLine(0)[2]), &(array[2]));
-    QCOMPARE(array[2], 2);
 }
 
 void QImageMatConvert::cleanupTestCase01For4ChannelImage() {}
 
-void QImageMatConvert::cleanupTestCase() { delete[] array; }
-
-void QImageMatConvert::initArray()
-{
-    if (array != nullptr) {
-        delete[] array;
-    }
-    array = new uchar[16] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-}
+void QImageMatConvert::cleanupTestCase() {}
 
 QTEST_APPLESS_MAIN(QImageMatConvert)
 
